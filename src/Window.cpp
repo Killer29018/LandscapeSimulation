@@ -1,8 +1,10 @@
 #include "Window.hpp"
 #include "EventHandler.hpp"
+#include "GLFW/glfw3.h"
 
 #include <iostream>
 #include <algorithm>
+#include <format>
 
 Window::Window() {}
 
@@ -11,6 +13,8 @@ Window::Window(uint32_t screenWidth, uint32_t screenHeight, const char* title)
     m_Size = glm::ivec2 { screenWidth, screenHeight };
 
     initGLFW(title);
+
+    attach(this);
 }
 
 Window::~Window()
@@ -47,10 +51,36 @@ const glm::ivec2& Window::getSize()
     return m_Size;
 }
 
+void Window::keyboardEvent(const KeyboardEvent& event)
+{
+    if (event.action != GLFW_PRESS) return;
+
+    switch (event.key)
+    {
+    case GLFW_KEY_ESCAPE:
+        shouldClose(true);
+        break;
+    }
+}
+
+void Window::mouseEnterEvent(const MouseEnterEvent& event)
+{
+    if (event.entered)
+    {
+        m_FirstMouse = true;
+    }
+}
+
+void Window::setInputMode(int32_t mode, int32_t value)
+{
+    glfwSetInputMode(getWindow(), mode, value);
+}
+
 void Window::setWindowHint(int32_t hint, int32_t value)
 {
     glfwWindowHint(hint, value);
 }
+
 
 void Window::initGLFW(const char* title)
 {
@@ -88,6 +118,7 @@ void Window::initGLFW(const char* title)
 
     glfwSetKeyCallback(getWindow(), keyboardEvent);
     glfwSetCursorPosCallback(getWindow(), mouseMoveEvent);
+    glfwSetCursorEnterCallback(getWindow(), mouseEnteredEvent);
 }
 
 void Window::notify(const Event* event)
@@ -116,6 +147,9 @@ void Window::keyboardEvent(GLFWwindow* window, int key, int scancode, int action
 
 void Window::mouseMoveEvent(GLFWwindow* window, double xPos, double yPos)
 {
+    static float previousX = 0.0f;
+    static float previousY = 0.0f;
+
     Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
 
     MousePositionEvent positionEvent;
@@ -125,8 +159,27 @@ void Window::mouseMoveEvent(GLFWwindow* window, double xPos, double yPos)
     w->notify(&positionEvent);
 
     MouseMoveEvent moveEvent;
-    moveEvent.xOffset = xPos;
-    moveEvent.yOffset = yPos;
+    if (w->m_FirstMouse)
+    {
+        previousX = xPos;
+        previousY = yPos;
+        w->m_FirstMouse = false;
+    }
+    moveEvent.xOffset = xPos - previousX;
+    moveEvent.yOffset = previousY - yPos;
+
+    previousX = xPos;
+    previousY = yPos;
 
     w->notify(&moveEvent);
+}
+
+void Window::mouseEnteredEvent(GLFWwindow* window, int entered)
+{
+    Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+
+    MouseEnterEvent event;
+    event.entered = entered;
+
+    w->notify(&event);
 }

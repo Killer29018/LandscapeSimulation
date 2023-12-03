@@ -18,7 +18,7 @@ public:
     const char* what() const noexcept { return "Window not created"; }
 };
 
-class Window : public EventSignaller
+class Window : public EventSignaller, public EventObserver
 {
 public:
     Window();
@@ -34,14 +34,22 @@ public:
     GLFWwindow* getWindow();
     const glm::ivec2& getSize();
 
+
+    void keyboardEvent(const KeyboardEvent& event) override;
+    void mouseEnterEvent(const MouseEnterEvent& event) override;
+
+    void setInputMode(int32_t mode, int32_t value);
+
     bool isActive() { return !glfwWindowShouldClose(getWindow()); }
     void swapBuffers() { glfwSwapBuffers(getWindow()); }
+    void shouldClose(bool value) { glfwSetWindowShouldClose(getWindow(), value); }
 
     static void setWindowHint(int32_t hint, int32_t value);
-
 private:
     std::optional<GLFWwindow*> m_Window;
     glm::ivec2 m_Size;
+
+    bool m_FirstMouse = true;
 
     // Fast Write / Remove, Slow random access
     std::list<EventObserver*> m_Observers;
@@ -52,4 +60,5 @@ private:
 
     static void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouseMoveEvent(GLFWwindow* window, double xPos, double yPos);
+    static void mouseEnteredEvent(GLFWwindow* window, int entered);
 };

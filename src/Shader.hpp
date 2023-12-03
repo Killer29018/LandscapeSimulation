@@ -4,6 +4,9 @@
 #include <optional>
 #include <fstream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 class shader_existence_error : public std::exception
 {
 public:
@@ -27,6 +30,7 @@ public:
 
 
     void setFloat(const std::string& name, float value);
+    void setMat4(const std::string& name, const glm::mat4& value);
 private:
     std::optional<uint32_t> m_ID;
 private:
