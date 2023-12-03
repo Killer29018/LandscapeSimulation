@@ -6,20 +6,44 @@
 #include <algorithm>
 #include <format>
 
+uint32_t Window::s_Count = 0;
+
 Window::Window() {}
 
-Window::Window(uint32_t screenWidth, uint32_t screenHeight, const char* title)
+Window::Window(glm::ivec2 windowSize, const char* title)
+    : m_Size(windowSize)
 {
-    m_Size = glm::ivec2 { screenWidth, screenHeight };
-
     initGLFW(title);
-
     attach(this);
+
+    s_Count++;
+}
+Window::Window(uint32_t screenWidth, uint32_t screenHeight, const char* title)
+    : m_Size({ screenWidth, screenHeight })
+{
+    initGLFW(title);
+    attach(this);
+
+    s_Count++;
+}
+
+Window::Window(Window&& window)
+{
+    m_Size = window.m_Size;
+    m_Observers = std::move(window.m_Observers);
+    m_Window = std::move(window.m_Window);
+
+    s_Count++;
 }
 
 Window::~Window()
 {
-    glfwTerminate();
+    s_Count--;
+    if (s_Count == 0)
+    {
+        glfwTerminate();
+    }
+
 }
 
 void Window::getEvents()
@@ -59,6 +83,11 @@ void Window::keyboardEvent(const KeyboardEvent& event)
     {
     case GLFW_KEY_ESCAPE:
         shouldClose(true);
+        break;
+    case GLFW_KEY_LEFT_ALT:
+        m_MouseCaptured = !m_MouseCaptured;
+        m_FirstMouse = true;
+        setInputMode(GLFW_CURSOR, m_MouseCaptured ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
         break;
     }
 }
@@ -151,6 +180,9 @@ void Window::mouseMoveEvent(GLFWwindow* window, double xPos, double yPos)
     static float previousY = 0.0f;
 
     Window* w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+
+    if (!w->m_MouseCaptured)
+        return;
 
     MousePositionEvent positionEvent;
     positionEvent.xPosition = xPos;

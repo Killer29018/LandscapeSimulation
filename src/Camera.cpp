@@ -4,8 +4,10 @@
 #include <algorithm>
 #include <unordered_map>
 
-Camera::Camera(glm::ivec2 windowSize)
-    : m_WindowSize(windowSize), m_Position({ 0.0f, 0.0f, 0.0f }), m_Pitch(0.0f), m_Yaw(0.0f)
+
+
+Camera::Camera()
+    : m_WindowSize({ 0, 0 }), m_Position({ 0.0f, 0.0f, 0.0f }), m_Pitch(0.0f), m_Yaw(0.0f)
 {
     calculateVectors();
 }

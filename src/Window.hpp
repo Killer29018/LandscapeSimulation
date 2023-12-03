@@ -22,7 +22,10 @@ class Window : public EventSignaller, public EventObserver
 {
 public:
     Window();
+    Window(glm::ivec2 windowSize, const char* title);
     Window(uint32_t screenWidth, uint32_t screenHeight, const char* title);
+
+    Window(Window&& window);
 
     ~Window();
 
@@ -33,7 +36,6 @@ public:
 
     GLFWwindow* getWindow();
     const glm::ivec2& getSize();
-
 
     void keyboardEvent(const KeyboardEvent& event) override;
     void mouseEnterEvent(const MouseEnterEvent& event) override;
@@ -49,7 +51,10 @@ private:
     std::optional<GLFWwindow*> m_Window;
     glm::ivec2 m_Size;
 
+    static uint32_t s_Count;
+
     bool m_FirstMouse = true;
+    bool m_MouseCaptured = true;
 
     // Fast Write / Remove, Slow random access
     std::list<EventObserver*> m_Observers;

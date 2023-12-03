@@ -9,7 +9,7 @@
 class Camera : public EventObserver
 {
 public:
-    Camera(glm::ivec2 windowSize);
+    Camera();
     Camera(glm::ivec2 windowSize, glm::vec3 position);
     Camera(glm::ivec2 windowSize, glm::vec3 position, glm::vec3 lookat);
     Camera(glm::ivec2 windowSize, glm::vec3 position, double pitch, double yaw);
