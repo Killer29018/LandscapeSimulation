@@ -1,4 +1,5 @@
 #include "Shader.hpp"
+
 #include "glad/gl.h"
 
 #include <exception>

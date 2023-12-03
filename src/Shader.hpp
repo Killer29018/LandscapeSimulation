@@ -1,11 +1,10 @@
 #pragma once
 
-#include <glad/gl.h>
-
+#include <cstdint>
 #include <optional>
 #include <fstream>
 
-class shader_existence_error : std::exception
+class shader_existence_error : public std::exception
 {
 public:
     shader_existence_error() { }
