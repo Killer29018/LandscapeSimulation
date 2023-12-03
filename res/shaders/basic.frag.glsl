@@ -1,10 +1,10 @@
 #version 430
 
-in vec3 v_Colour;
+in vec2 v_Texcoords;
 
 out vec4 f_Colour;
 
 void main()
 {
-    f_Colour = vec4(v_Colour, 1.0);
+    f_Colour = vec4(v_Texcoords, 0.0, 1.0);
 }

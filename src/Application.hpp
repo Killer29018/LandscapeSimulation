@@ -5,6 +5,8 @@
 #include "EventHandler.hpp"
 #include "Camera.hpp"
 
+#include "Mesh.hpp"
+
 class Application : public EventSignaller, public EventObserver
 {
 public:
@@ -19,11 +21,11 @@ private:
     std::list<EventObserver*> m_Observers;
 
     Window m_Window;
-    uint32_t m_VAO;
-    uint32_t m_VBO;
 
     Shader m_Shader;
     Camera m_Camera;
+
+    Mesh m_Mesh;
 private:
     void initialize();
     void mainLoop();

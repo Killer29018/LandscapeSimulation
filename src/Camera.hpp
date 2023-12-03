@@ -38,10 +38,11 @@ private:
 
     float m_Zoom = 90.0f;
     float m_NearClipping = 0.01f;
-    float m_FarClipping = 100.0f;
+    float m_FarClipping = 500.0f;
 
     float m_Sensitivity = 10.0f;
     float m_MovementSpeed = 10.0f;
+    float m_SpeedMultiplier = 3.0f;
 
     glm::vec3 m_Front;
     glm::vec3 m_Right;

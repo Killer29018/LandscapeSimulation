@@ -1,19 +1,3 @@
-#include <iostream>
-
-#include <glad/gl.h>
-
-#include <GLFW/glfw3.h>
-#include <stdint.h>
-
-#include <glm/gtx/string_cast.hpp>
-
-#include <fstream>
-
-#include "Shader.hpp"
-#include "Window.hpp"
-#include "EventHandler.hpp"
-#include "Camera.hpp"
-
 #include "Application.hpp"
 
 const uint32_t SCREEN_WIDTH = 1000;

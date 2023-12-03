@@ -30,7 +30,7 @@ void Application::detach(EventObserver* observer)
 
 void Application::initialize()
 {
-    m_Camera = Camera { m_Window.getSize(), { 0.0f, 0.0f, 0.0f } };
+    m_Camera = Camera { m_Window.getSize(), { 0.0f, 1.0f, 0.0f } };
     m_Window.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     m_Shader.compileFromPath("res/shaders/basic.vert.glsl", "res/shaders/basic.frag.glsl");
@@ -39,28 +39,9 @@ void Application::initialize()
     attach(&m_Camera);
 
     glEnable(GL_DEPTH_TEST);
-    float vertices[] = {
-        //  Position        Colour
-        -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f,
-         0.5f, -0.5f, -1.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f,  0.5f, -1.0f, 0.0f, 1.0f, 0.0f,
-         0.5f, -0.5f, -1.0f, 1.0f, 0.0f, 0.0f,
-         0.5f,  0.5f, -1.0f, 1.0f, 1.0f, 0.0f,
-        -0.5f,  0.5f, -1.0f, 0.0f, 1.0f, 0.0f
-    };
+    glEnable(GL_FRAMEBUFFER_SRGB);
 
-    glGenVertexArrays(1, &m_VAO);
-    glBindVertexArray(m_VAO);
-
-    glGenBuffers(1, &m_VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    m_Mesh = Mesh { glm::vec3 { 0.0f }, glm::vec2 { 500.0f }, 100 };
 }
 
 void Application::mainLoop()
@@ -89,8 +70,7 @@ void Application::mainLoop()
         m_Shader.setMat4("u_View", m_Camera.getViewMatrix());
         m_Shader.setMat4("u_Projection", m_Camera.getProjectionMatrix());
 
-        glBindVertexArray(m_VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        m_Mesh.render();
 
         m_Window.swapBuffers();
     }

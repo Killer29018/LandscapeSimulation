@@ -54,6 +54,9 @@ void Camera::update(const UpdateEvent& event)
 
     m_Pitch = std::clamp(m_Pitch, -90.0, 90.0);
 
+
+    float speedMultiplier = m_PressedKeys[GLFW_KEY_LEFT_SHIFT] ? m_SpeedMultiplier : 1.0f;
+
     for (auto it = m_PressedKeys.begin(); it!= m_PressedKeys.end(); it++)
     {
         if (it->second)
@@ -61,22 +64,22 @@ void Camera::update(const UpdateEvent& event)
             switch (it->first)
             {
                 case GLFW_KEY_W:
-                    m_Position += m_Front * event.dt * m_MovementSpeed;
+                    m_Position += m_Front * event.dt * m_MovementSpeed * speedMultiplier;
                     break;
                 case GLFW_KEY_A:
-                    m_Position -= m_Right * event.dt * m_MovementSpeed;
+                    m_Position -= m_Right * event.dt * m_MovementSpeed * speedMultiplier;
                     break;
                 case GLFW_KEY_S:
-                    m_Position -= m_Front * event.dt * m_MovementSpeed;
+                    m_Position -= m_Front * event.dt * m_MovementSpeed * speedMultiplier;
                     break;
                 case GLFW_KEY_D:
-                    m_Position += m_Right * event.dt * m_MovementSpeed;
+                    m_Position += m_Right * event.dt * m_MovementSpeed * speedMultiplier;
                     break;
                 case GLFW_KEY_SPACE:
-                    m_Position += m_WorldUp * event.dt * m_MovementSpeed;
+                    m_Position += m_WorldUp * event.dt * m_MovementSpeed * speedMultiplier;
                     break;
                 case GLFW_KEY_LEFT_CONTROL:
-                    m_Position -= m_WorldUp * event.dt * m_MovementSpeed;
+                    m_Position -= m_WorldUp * event.dt * m_MovementSpeed * speedMultiplier;
                     break;
             }
         }
