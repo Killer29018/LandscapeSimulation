@@ -31,9 +31,6 @@ public:
 
     void getEvents();
 
-    void attach(EventObserver* observer) override;
-    void detach(EventObserver* observer) override;
-
     GLFWwindow* getWindow();
     const glm::ivec2& getSize();
 
@@ -60,8 +57,6 @@ private:
     std::list<EventObserver*> m_Observers;
 private:
     void initGLFW(const char* title);
-
-    void notify(const Event* event);
 
     static void keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
     static void mouseMoveEvent(GLFWwindow* window, double xPos, double yPos);

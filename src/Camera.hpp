@@ -16,8 +16,8 @@ public:
 
     ~Camera() {};
 
-    glm::mat4 getViewMatrix();
-    glm::mat4 getProjectionMatrix();
+    glm::mat4 getViewMatrix() const;
+    glm::mat4 getProjectionMatrix() const;
 
     void update(const UpdateEvent& event) override;
     void keyboardEvent(const KeyboardEvent& event) override;

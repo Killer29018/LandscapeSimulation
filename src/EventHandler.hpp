@@ -2,8 +2,13 @@
 
 #include <iostream>
 
+#include <list>
+
+class Camera;
+
 enum class EventType {
     UpdateEvent,
+    RenderEvent,
     KeyboardEvent,
     MouseMoveEvent,
     MousePositionEvent,
@@ -25,6 +30,13 @@ struct UpdateEvent : public Event
 public:
     float dt;
     UpdateEvent() : Event(EventType::UpdateEvent) {}
+};
+
+struct RenderEvent : public Event
+{
+public:
+    const Camera* camera;
+    RenderEvent() : Event(EventType::RenderEvent) {}
 };
 
 struct KeyboardEvent : public Event
@@ -76,6 +88,9 @@ public:
             case EventType::UpdateEvent:
                 update(*reinterpret_cast<const UpdateEvent*>(event));
                 break;
+            case EventType::RenderEvent:
+                render(*reinterpret_cast<const RenderEvent*>(event));
+                break;
             case EventType::KeyboardEvent:
                 keyboardEvent(*reinterpret_cast<const KeyboardEvent*>(event));
                 break;
@@ -92,6 +107,7 @@ public:
     }
 
     virtual void update(const UpdateEvent& event) {}
+    virtual void render(const RenderEvent& event) {}
     virtual void keyboardEvent(const KeyboardEvent& event) {}
     virtual void mouseMoveEvent(const MouseMoveEvent& event) {}
     virtual void mousePositionEvent(const MousePositionEvent& event) {}
@@ -103,6 +119,11 @@ class EventSignaller
 public:
     virtual ~EventSignaller() {};
 
-    virtual void attach(EventObserver* observer) = 0;
-    virtual void detach(EventObserver* observer) = 0;
+    virtual void attach(EventObserver* observer);
+    virtual void detach(EventObserver* observer);
+
+protected:
+    std::list<EventObserver*> m_Observers;
+protected:
+    virtual void notify(const Event* event);
 };

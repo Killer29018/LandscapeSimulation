@@ -17,15 +17,18 @@ void Application::start()
     mainLoop();
 }
 
-void Application::attach(EventObserver* observer)
+void Application::keyboardEvent(const KeyboardEvent& event)
 {
-    m_Observers.push_back(observer);
-}
+    if (event.action != GLFW_PRESS) return;
 
-void Application::detach(EventObserver* observer)
-{
-    auto pos = std::find(m_Observers.begin(), m_Observers.end(), observer);
-    m_Observers.erase(pos);
+    if (event.key == GLFW_KEY_RIGHT_CONTROL)
+    {
+        m_WireframeRender = !m_WireframeRender;
+    }
+    if (event.key == GLFW_KEY_R)
+    {
+        m_Mesh.regenerate();
+    }
 }
 
 void Application::initialize()
@@ -35,8 +38,10 @@ void Application::initialize()
 
     m_Shader.compileFromPath("res/shaders/basic.vert.glsl", "res/shaders/basic.frag.glsl");
 
+    m_Window.attach(this);
     m_Window.attach(&m_Camera);
     attach(&m_Camera);
+    attach(&m_Mesh);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
@@ -61,25 +66,22 @@ void Application::mainLoop()
 
         m_Window.getEvents();
 
+        if (m_WireframeRender)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        else
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 model { 1.0f };
-        m_Shader.bind();
-        m_Shader.setMat4("u_Model", model);
-        m_Shader.setMat4("u_View", m_Camera.getViewMatrix());
-        m_Shader.setMat4("u_Projection", m_Camera.getProjectionMatrix());
-
-        m_Mesh.render();
+        RenderEvent render;
+        render.camera = &m_Camera;
+        notify(&render);
 
         m_Window.swapBuffers();
-    }
-}
-
-void Application::notify(const Event* event)
-{
-    for (auto it = m_Observers.begin(); it != m_Observers.end(); it++)
-    {
-        (*it)->receiveEvent(event);
     }
 }

@@ -34,12 +34,12 @@ Camera::Camera(glm::ivec2 windowSize, glm::vec3 position, double pitch, double y
     calculateVectors();
 }
 
-glm::mat4 Camera::getViewMatrix()
+glm::mat4 Camera::getViewMatrix() const
 {
     return glm::lookAt(m_Position, m_Position + m_Front, m_WorldUp);
 }
 
-glm::mat4 Camera::getProjectionMatrix()
+glm::mat4 Camera::getProjectionMatrix() const
 {
     return glm::perspective(glm::radians(m_Zoom), (float)m_WindowSize.x / (float)m_WindowSize.y, m_NearClipping, m_FarClipping);
 }

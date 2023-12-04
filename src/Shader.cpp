@@ -84,11 +84,11 @@ void Shader::checkShaderUnitError(uint32_t object, const std::string& unitType)
 {
     int32_t success;
     char infoLog[1024];
-    glGetProgramiv(object, GL_LINK_STATUS, &success);
+    glGetShaderiv(object, GL_COMPILE_STATUS, &success);
     if (!success)
     {
-        glGetProgramInfoLog(object, 1024, NULL, infoLog);
-        std::cerr << "SHADER:LINK_ERROR:" << unitType << "\n" << infoLog << "\n";
+        glGetShaderInfoLog(object, 1024, NULL, infoLog);
+        std::cerr << "SHADER:COMPILER_ERROR:" << unitType << "\n" << infoLog << "\n";
         throw std::runtime_error("Failed to compile unit of shader");
     }
 }
@@ -98,11 +98,11 @@ void Shader::checkProgramError(uint32_t object)
     int32_t success;
     char infoLog[1024];
 
-    glGetProgramiv(object, GL_COMPILE_STATUS, &success);
+    glGetProgramiv(object, GL_LINK_STATUS, &success);
     if (!success)
     {
-        glGetShaderInfoLog(object, 1024, NULL, infoLog);
-        std::cerr << "SHADER:COMPILE_ERROR:\n" << infoLog << "\n";
+        glGetProgramInfoLog(object, 1024, NULL, infoLog);
+        std::cerr << "SHADER:LINK_ERROR:\n" << infoLog << "\n";
         throw std::runtime_error("Failed to compile Shader");
     }
 }

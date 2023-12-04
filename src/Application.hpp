@@ -15,20 +15,17 @@ public:
 
     void start();
 
-    void attach(EventObserver* observer);
-    void detach(EventObserver* observer);
+    void keyboardEvent(const KeyboardEvent& event) override;
 private:
-    std::list<EventObserver*> m_Observers;
-
     Window m_Window;
 
     Shader m_Shader;
     Camera m_Camera;
 
     Mesh m_Mesh;
+
+    bool m_WireframeRender = false;
 private:
     void initialize();
     void mainLoop();
-
-    void notify(const Event* event);
 };

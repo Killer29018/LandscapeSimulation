@@ -51,17 +51,6 @@ void Window::getEvents()
     glfwPollEvents();
 }
 
-void Window::attach(EventObserver* observer)
-{
-    m_Observers.push_back(observer);
-}
-
-void Window::detach(EventObserver* observer)
-{
-    auto position = std::find(m_Observers.begin(), m_Observers.end(), observer);
-    m_Observers.erase(position);
-}
-
 GLFWwindow* Window::getWindow()
 {
     if (m_Window)
@@ -148,17 +137,6 @@ void Window::initGLFW(const char* title)
     glfwSetKeyCallback(getWindow(), keyboardEvent);
     glfwSetCursorPosCallback(getWindow(), mouseMoveEvent);
     glfwSetCursorEnterCallback(getWindow(), mouseEnteredEvent);
-}
-
-void Window::notify(const Event* event)
-{
-    auto it = m_Observers.begin();
-
-    while (it != m_Observers.end())
-    {
-        (*it)->receiveEvent(event);
-        it++;
-    }
 }
 
 void Window::keyboardEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
