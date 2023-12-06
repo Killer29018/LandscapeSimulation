@@ -14,6 +14,7 @@ layout (std430, binding = 1) readonly buffer HeightDataBuffer
 } s_HeightData;
 
 out vec2 v_Texcoords;
+out flat vec3 v_Normal;
 
 uniform mat4 u_Model;
 uniform mat4 u_View;
@@ -25,6 +26,19 @@ void main()
 {
     int index = gl_VertexID;
 
+    vec3 normal = vec3(0., 1., 0.);
+    int count = 0;
+
+    // int index1 = gl_VertexID - 1;
+    // if (index1 > 0 && (index1 + 1) % u_SideLength != 0)
+    // {
+    //     normal += direction
+    //     count++;
+    // }
+    // int index2 = gl_VertexID + 1;
+    // int index1 = gl_VertexID - u_SideLength;
+    // int index2 = gl_VertexID + u_SideLength;
+
     vec3 offset = vec3(0.);
     offset.y = s_HeightData.data[index].height.y;
     vec3 newPosition = i_Position + offset;
@@ -32,4 +46,5 @@ void main()
     gl_Position = u_Projection * u_View * u_Model * vec4(newPosition, 1.0);
 
     v_Texcoords = i_Texcoords;
+    v_Normal = normal;
 }

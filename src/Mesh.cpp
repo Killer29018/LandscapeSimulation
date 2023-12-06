@@ -5,6 +5,8 @@
 
 #include "Camera.hpp"
 
+#include "FastNoise/FastNoise.h"
+
 Mesh::Mesh()
     : m_Position(0.0f), m_Size(0.0f), m_Length(0)
 {
@@ -125,13 +127,29 @@ void Mesh::generateMesh()
 void Mesh::generateHeight()
 {
     m_HeightData.clear();
+    auto fractal = FastNoise::New<FastNoise::FractalFBm>();
+    auto simplex = FastNoise::New<FastNoise::Simplex>();
+    fractal->SetSource(simplex);
+    fractal->SetGain(10);
+    fractal->SetOctaveCount(2);
+    auto fractal2 = FastNoise::New<FastNoise::FractalFBm>();
+    fractal2->SetSource(fractal);
+    fractal2->SetGain(5);
+    fractal2->SetOctaveCount(10);
+
+    auto node = fractal2;
+
+    std::vector<float> noiseOutput(m_Length * m_Length);
+
+    node->GenUniformGrid2D(noiseOutput.data(), 0, 0, m_Length, m_Length, 0.2f, 1337);
+
     for (int z = 0; z < m_Length; z++)
     {
         for (int x = 0; x < m_Length; x++)
         {
             HeightData data;
             glm::vec4 height { 0.0f };
-            height.y = rand() % 10;
+            height.y = noiseOutput.at(z * m_Length + x) * 10;
             data.height = height;
             m_HeightData.push_back(data);
         }

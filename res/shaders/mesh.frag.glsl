@@ -1,6 +1,7 @@
 #version 430
 
 in vec2 v_Texcoords;
+in flat vec3 v_Normal;
 
 out vec4 f_Colour;
 

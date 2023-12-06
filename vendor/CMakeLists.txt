@@ -12,6 +12,9 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(glfw)
 set_target_properties(glfw PROPERTIES FOLDER vendor)
 
+set(FASTNOISE2_NOISETOOL OFF CACHE BOOL "" FORCE)
+add_subdirectory(FastNoise2)
+
 # project(Imgui)
 # find_package(OpenGL REQUIRED)
 # file(GLOB_RECURSE imguiFiles CONFIGURE_DEPENDS "imgui/*.cpp" "imgui/*.h")
