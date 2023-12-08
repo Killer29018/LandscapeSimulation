@@ -23,8 +23,9 @@ public:
     void keyboardEvent(const KeyboardEvent& event) override;
     void mouseMoveEvent(const MouseMoveEvent& event) override;
 
-    glm::vec3 getFront() { return m_Front; }
-    glm::vec3 getRight() { return m_Right; }
+    glm::vec3 getPosition() const { return m_Position; }
+    glm::vec3 getFront() const { return m_Front; }
+    glm::vec3 getRight() const { return m_Right; }
 
     void setSensitivity(float sens) { m_Sensitivity = sens; }
     void setMovementSpeed(float speed) { m_MovementSpeed = speed; }
@@ -38,11 +39,11 @@ private:
 
     float m_Zoom = 90.0f;
     float m_NearClipping = 0.01f;
-    float m_FarClipping = 500.0f;
+    float m_FarClipping = 5000.0f;
 
     float m_Sensitivity = 10.0f;
     float m_MovementSpeed = 10.0f;
-    float m_SpeedMultiplier = 3.0f;
+    float m_SpeedMultiplier = 10.0f;
 
     glm::vec3 m_Front;
     glm::vec3 m_Right;

@@ -33,6 +33,7 @@ void Application::keyboardEvent(const KeyboardEvent& event)
 
 void Application::initialize()
 {
+    srand(time(0));
     m_Camera = Camera { m_Window.getSize(), { 0.0f, 1.0f, 0.0f } };
     m_Window.setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -46,7 +47,7 @@ void Application::initialize()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    m_Mesh = Mesh { glm::vec3 { 0.0f }, glm::vec2 { 500.0f }, 100 };
+    m_Mesh = Mesh { glm::vec3 { 0.0f }, glm::vec2 { 500.0f }, 500 };
 }
 
 void Application::mainLoop()
@@ -59,6 +60,10 @@ void Application::mainLoop()
         currentTime = glfwGetTime();
         float dt = currentTime - previousTime;
         previousTime = currentTime;
+
+#ifndef COMPILE_DEBUG
+        Shader::checkFileChange();
+#endif // COMPILE_DEBUG
 
         UpdateEvent event;
         event.dt = dt;

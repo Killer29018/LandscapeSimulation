@@ -27,7 +27,12 @@ void Mesh::render(const RenderEvent& event)
     m_Shader.setMat4("u_View", camera.getViewMatrix());
     m_Shader.setMat4("u_Projection", camera.getProjectionMatrix());
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_HeightSSBO);
+    m_Shader.setVec3("u_CameraView", camera.getFront());
+    m_Shader.setVec3("u_CameraPosition", camera.getPosition());
+    m_Shader.setVec2("u_HeightTextureSize", m_HeightTextureSize);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_HeightTexture);
 
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_IndexCount, GL_UNSIGNED_INT, 0);
@@ -42,7 +47,7 @@ void Mesh::generateData()
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
     glGenBuffers(1, &m_EBO);
-    glGenBuffers(1, &m_HeightSSBO);
+    glGenTextures(1, &m_HeightTexture);
 
     glBindVertexArray(m_VAO);
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
@@ -126,37 +131,27 @@ void Mesh::generateMesh()
 
 void Mesh::generateHeight()
 {
-    m_HeightData.clear();
     auto fractal = FastNoise::New<FastNoise::FractalFBm>();
-    auto simplex = FastNoise::New<FastNoise::Simplex>();
-    fractal->SetSource(simplex);
-    fractal->SetGain(10);
-    fractal->SetOctaveCount(2);
-    auto fractal2 = FastNoise::New<FastNoise::FractalFBm>();
-    fractal2->SetSource(fractal);
-    fractal2->SetGain(5);
-    fractal2->SetOctaveCount(10);
+    auto noise = FastNoise::New<FastNoise::Perlin>();
 
-    auto node = fractal2;
+    fractal->SetSource(noise);
+    fractal->SetGain(0.5);
+    fractal->SetOctaveCount(3);
 
-    std::vector<float> noiseOutput(m_Length * m_Length);
+    auto node = fractal;
 
-    node->GenUniformGrid2D(noiseOutput.data(), 0, 0, m_Length, m_Length, 0.2f, 1337);
+    const int size = 1024;
+    std::vector<float> noiseOutput(size * size);
+    m_HeightTextureSize = glm::vec2(size, size);
 
-    for (int z = 0; z < m_Length; z++)
-    {
-        for (int x = 0; x < m_Length; x++)
-        {
-            HeightData data;
-            glm::vec4 height { 0.0f };
-            height.y = noiseOutput.at(z * m_Length + x) * 10;
-            data.height = height;
-            m_HeightData.push_back(data);
-        }
-    }
+    node->GenUniformGrid2D(noiseOutput.data(), 0, 0, size, size, 0.01f, rand());
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_HeightSSBO);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(HeightData) * m_HeightData.size(), m_HeightData.data(), GL_DYNAMIC_READ);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_HeightSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    glBindTexture(GL_TEXTURE_2D, m_HeightTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, size, size, 0, GL_RED, GL_FLOAT, noiseOutput.data());
+    glGenerateMipmap(GL_TEXTURE_2D);
 }

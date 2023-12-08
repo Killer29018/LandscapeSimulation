@@ -13,11 +13,6 @@ struct Vertex
     glm::vec2 texCoords;
 };
 
-struct HeightData
-{
-    glm::vec4 height;
-};
-
 class Mesh : public EventObserver
 {
 public:
@@ -32,8 +27,8 @@ private:
     uint32_t m_VBO;
     uint32_t m_EBO;
 
-    uint32_t m_HeightSSBO;
-    std::vector<HeightData> m_HeightData;
+    uint32_t m_HeightTexture;
+    glm::vec2 m_HeightTextureSize;
 
     Shader m_Shader;
 
